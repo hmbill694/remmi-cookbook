@@ -1,0 +1,39 @@
+package web
+
+import "fmt"
+import "time"
+
+type Recipe struct {
+	Id string `json:"id"`
+	Title string `json:"title"`
+	Author string `json:"author"`
+	Description string `json:"description"`
+	CreatedAt time.Time `json:"createdAt"`
+	EditedAt time.Time `json:"editedAt"`
+}
+
+type RecipeDisplayCardProps struct {
+	Recipe Recipe
+}
+
+//templ RecipeDisplayCard(props RecipeDisplayCardProps) {
+//	<div class="bg-green-100 p-4 shadow-md rounded-lg mt-6">
+//		<p>Hello, { props.Recipe.Title }</p>
+//	</div>
+//}
+
+
+type HomePageProps struct {
+	UserId string
+	Recipes []Recipe
+}
+
+templ HomePage(props HomePageProps) {
+	@Base() {
+		<form hx-post={fmt.Sprintf("/recipes/%s}", props.UserId)} method="POST" hx-target="#user-recipes-container">
+			<input class="bg-gray-200 text-black p-2 border border-gray-400 rounded-lg"id="name" name="name" type="text"/>
+			<button type="submit" class="bg-orange-500 hover:bg-orange-700 text-white py-2 px-4 rounded">Submit</button>
+		</form>
+		<div id="user-recipes-container"></div>
+	}
+}
