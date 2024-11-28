@@ -1,4 +1,5 @@
 # Simple Makefile for a Go project
+include .env
 
 # Build the application
 all: build test
@@ -78,3 +79,6 @@ watch:
         fi
 
 .PHONY: all build run test clean watch tailwind-install docker-run docker-down itest templ-install
+
+migrate: 
+	goose postgres -dir ./migrations "postgresql://melkey:password1234@localhost:5432/blueprint" up

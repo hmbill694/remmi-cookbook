@@ -15,15 +15,17 @@ import (
 type Server struct {
 	port int
 
-	db database.Service
+	Db database.Service
 }
 
-func NewServer() *http.Server {
+func NewServer() (*http.Server, database.Service) {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
+
+	db := database.New()
+
 	NewServer := &Server{
 		port: port,
-
-		db: database.New(),
+		Db:   db,
 	}
 
 	// Declare Server config
@@ -35,5 +37,5 @@ func NewServer() *http.Server {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	return server
+	return server, db
 }

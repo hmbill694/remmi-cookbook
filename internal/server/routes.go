@@ -7,9 +7,9 @@ import (
 	"log"
 	"time"
 
+	"remmi-cookbook/cmd/model"
 	"remmi-cookbook/cmd/web"
 
-	"github.com/a-h/templ"
 	"github.com/coder/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -17,7 +17,9 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "method=${method}, uri=${uri}, status=${status}\n",
+	}))
 	e.Use(middleware.Recover())
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -31,10 +33,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 	fileServer := http.FileServer(http.FS(web.Files))
 	e.GET("/assets/*", echo.WrapHandler(fileServer))
 
-	e.GET("/", echo.WrapHandler(templ.Handler(web.HomePage(web.HomePageProps{
+	e.GET("/", HanlderFromTempl(web.HomePage(web.HomePageProps{
 		UserId:  "foo",
-		Recipes: []web.Recipe{},
-	}))))
+		Recipes: []model.Recipe{},
+	})))
+
+	// e.GET("/api/v1/recipes", s.getRecipesForUser)
 
 	e.GET("/health", s.healthHandler)
 
@@ -43,16 +47,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 	return e
 }
 
-func (s *Server) HelloWorldHandler(c echo.Context) error {
-	resp := map[string]string{
-		"message": "Hello World",
-	}
-
-	return c.JSON(http.StatusOK, resp)
+func (s *Server) getRecipesForUser(c echo.Context) error {
+	return c.JSON(http.StatusOK, s.Db.Health())
 }
 
 func (s *Server) healthHandler(c echo.Context) error {
-	return c.JSON(http.StatusOK, s.db.Health())
+	return c.JSON(http.StatusOK, s.Db.Health())
 }
 
 func (s *Server) websocketHandler(c echo.Context) error {

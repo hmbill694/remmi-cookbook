@@ -38,4 +38,4 @@ cmd/web/assets/css/output.css
 tailwindcss
 
 
-/nodes_modules
+node_modules/

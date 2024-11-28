@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os/signal"
 	"syscall"
@@ -38,14 +39,21 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 
 func main() {
 
-	server := server.NewServer()
+	httpServer, dbService := server.NewServer()
+
+	seedErr := dbService.SeedSql()
+
+	if seedErr != nil {
+		slog.Info(seedErr.Error())
+		panic("Failed to seed DB")
+	}
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)
 	// Run graceful shutdown in a separate goroutine
-	go gracefulShutdown(server, done)
+	go gracefulShutdown(httpServer, done)
 
-	err := server.ListenAndServe()
+	err := httpServer.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		panic(fmt.Sprintf("http server error: %s", err))
 	}

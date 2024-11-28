@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -18,6 +19,8 @@ type Service interface {
 	// Health returns a map of health status information.
 	// The keys and values in the map are service-specific.
 	Health() map[string]string
+
+	SeedSql() error
 
 	// Close terminates the database connection.
 	// It returns an error if the connection cannot be closed.
@@ -52,6 +55,31 @@ func New() Service {
 		db: db,
 	}
 	return dbInstance
+}
+
+func (s *service) SeedSql() error {
+	projectEnv := os.Getenv("APP_ENV")
+
+	if projectEnv != "local" {
+		return nil
+	}
+
+	path := filepath.Join("./", "seed.sql")
+
+	c, ioErr := os.ReadFile(path)
+	if ioErr != nil {
+		return ioErr
+	}
+
+	sql := string(c)
+
+	_, err := s.db.Exec(sql)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Health checks the health of the database connection by pinging the database.
