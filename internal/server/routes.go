@@ -3,15 +3,32 @@ package server
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"remmi-cookbook/cmd/web"
 
+	notFoundPage "remmi-cookbook/internal/views/not-found-page"
+
 	"github.com/coder/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+func errorHandler(err error, e echo.Context) {
+	code := http.StatusInternalServerError
+	if he, ok := err.(*echo.HTTPError); ok {
+		code = he.Code
+	}
+
+	if code == 404 {
+		if renderError := TempleToEchoResponse(notFoundPage.NotFoundPage(), e); renderError != nil {
+			slog.Error(fmt.Sprintf("Failed to render 404 response %s", renderError.Error()))
+		}
+	}
+
+}
 
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
@@ -35,9 +52,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/api/recipe/search", s.HomeHandlerSearch)
 
+	e.GET("/recipe/:id", s.RecipePageHandler)
+
 	e.GET("/health/up", s.up)
 
 	e.GET("/websocket", s.websocketHandler)
+
+	e.HTTPErrorHandler = errorHandler
 
 	return e
 }

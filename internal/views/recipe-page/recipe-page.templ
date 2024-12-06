@@ -1,0 +1,68 @@
+package recipePage
+
+import (
+	"remmi-cookbook/internal/repository"
+	base "remmi-cookbook/internal/views/base"
+)
+
+type RecipePageProps struct {
+	Recipe repository.Recipe
+}
+
+templ RecipePage() {
+	@base.Base() {
+		<!-- Card Component -->
+		<div class="card overflow-y-scroll">
+			<!-- Card Header -->
+			<div class="card-header text-center">
+				<h2 class="text-3xl font-bold mb-2">Recipe Title</h2>
+				<p class="text-gray-500">By Author Name</p>
+			</div>
+			<!-- Card Content -->
+			<div class="card-body overflow-y">
+				<img
+					src="recipe-image-url"
+					alt="Recipe Title"
+					class="w-full h-64 object-cover rounded-md mb-6"
+				/>
+				<p class="text-gray-600 mb-6">Recipe description goes here.</p>
+				<!-- Ingredients Section -->
+				<h3 class="text-xl font-semibold mb-3">Ingredients</h3>
+				<ul class="list-disc pl-5 mb-6">
+					<li class="mb-1">Ingredient 1</li>
+					<li class="mb-1">Ingredient 2</li>
+					<li class="mb-1">Ingredient 3</li>
+				</ul>
+				<!-- Instructions Section -->
+				<h3 class="text-xl font-semibold mb-3">Instructions</h3>
+				<ol class="list-decimal pl-5 mb-6">
+					<li class="mb-2">Step 1</li>
+					<li class="mb-2">Step 2</li>
+					<li class="mb-2">Step 3</li>
+				</ol>
+				<!-- Chat Dialog -->
+				<div class="card-actions">
+					<label for="chat-modal" class="btn w-full">
+						<svg class="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H8m-2 0h.01M7 8h10m-4 4H8m-2 0h.01M7 20h10m2-16h.01M15 8v8m0 0H9m6-8v8m0 0H9"></path>
+						</svg>
+						Chat with Recipe AI
+					</label>
+					<input type="checkbox" id="chat-modal" class="modal-toggle"/>
+					<div class="modal">
+						<div class="modal-box">
+							<h3 class="font-bold text-lg">Chat with Recipe AI</h3>
+							<p class="py-4">Ask questions about the recipe or get cooking tips.</p>
+							<div class="py-4">
+								<p>Chat functionality coming soon!</p>
+							</div>
+							<div class="modal-action">
+								<label for="chat-modal" class="btn">Close Chat</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

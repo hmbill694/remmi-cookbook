@@ -1,0 +1,14 @@
+package notFoundPage
+
+import (
+	base "remmi-cookbook/internal/views/base"
+	nothingToSee "remmi-cookbook/internal/views/nothing-to-see-here"
+)
+
+templ NotFoundPage() {
+	@base.Base() {
+		@nothingToSee.NothingToSeeHere(nothingToSee.NothingToSeeHereProps{
+			Message: "Ooops, this page does not exist.",
+		})
+	}
+}
