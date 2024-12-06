@@ -1,0 +1,144 @@
+package homeView
+
+import (
+	"fmt"
+	"remmi-cookbook/internal/repository"
+	base "remmi-cookbook/internal/views/base"
+	errorDisplay "remmi-cookbook/internal/views/error-display"
+	nothingToSee "remmi-cookbook/internal/views/nothing-to-see-here"
+)
+
+type RecipeCardProps struct {
+	Recipe    repository.Recipe
+	DayNumber int8
+}
+
+func toDate(dateNumber int8) string {
+	if dateNumber == 0 {
+		return "Sunday"
+	}
+
+	if dateNumber == 1 {
+		return "Monday"
+	}
+
+	if dateNumber == 2 {
+		return "Tuesday"
+	}
+
+	if dateNumber == 3 {
+		return "Wednesday"
+	}
+
+	if dateNumber == 4 {
+		return "Thursday"
+	}
+
+	if dateNumber == 5 {
+		return "Friday"
+	}
+
+	if dateNumber == 6 {
+		return "Saturday"
+	}
+
+	if dateNumber == 7 {
+		return "Sunday"
+	}
+
+	return "Not a real date"
+}
+
+templ RecipeCard(props RecipeCardProps) {
+	<div class="card bg-base-300 shadow-xl">
+		<p class="text-xl p-2 my-2">{ toDate(props.DayNumber) }</p>
+		<figure>
+			<img
+				src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+				alt="Shoes"
+			/>
+		</figure>
+		<div class="card-body">
+			<h2 class="card-title">{ props.Recipe.Title }</h2>
+			<p>{ props.Recipe.Description.String }</p>
+			<div class="card-actions justify-end">
+				<a
+					class="btn btn-primary"
+					href={ templ.SafeURL(fmt.Sprintf("/recipe/%d}", props.Recipe.ID)) }
+				>Goto</a>
+			</div>
+		</div>
+	</div>
+}
+
+type RecipeCardListProps struct {
+	Recipes []repository.Recipe
+	Err     error
+}
+
+templ RecipeCardList(props RecipeCardListProps) {
+	@errorDisplay.ErrorDisplay(errorDisplay.ErrorDisplayProps{
+		Err: props.Err,
+	}) {
+		if len(props.Recipes) == 0 {
+			<div id="user-recipes-container" class="w-full h-full flex justify-center items-center">
+				@nothingToSee.NothingToSeeHere(nothingToSee.NothingToSeeHereProps{Message: "You've got no recipes saved."})
+			</div>
+		} else {
+			<div id="user-recipes-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				for _, recipe := range props.Recipes {
+					@RecipeCard(RecipeCardProps{
+						Recipe:    recipe,
+						DayNumber: 0,
+					})
+				}
+			</div>
+		}
+	}
+}
+
+type HomePageProps struct {
+	UserId  string
+	Recipes []repository.Recipe
+	Err     error
+	Search  string
+}
+
+templ HomePage(props HomePageProps) {
+	@base.Base() {
+		<div class="flex flex-col md:flex-row md:justify-between mb-3">
+			<h2 class="text-xl font-bold">Your Recipies</h2>
+			<form hx-get="/api/recipe/search" hx-target="#user-recipes-container" method="get" hx-swap="outerHTML">
+				<label class="input input-bordered flex items-center gap-2">
+					<input
+						type="text"
+						class="grow"
+						placeholder="Search"
+						name="search"
+						value={ props.Search }
+						hx-get="/api/recipe/search"
+						hx-target="#user-recipes-container"
+						hx-trigger="submit, input changed delay:500ms"
+					/>
+					<button type="submit" class="btn btn-ghost">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 16 16"
+							fill="currentColor"
+							class="h-4 w-4 opacity-70"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+								clip-rule="evenodd"
+							></path>
+						</svg>
+					</button>
+				</label>
+			</form>
+		</div>
+		@RecipeCardList(RecipeCardListProps{
+			Recipes: props.Recipes,
+		})
+	}
+}

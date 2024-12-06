@@ -1,0 +1,36 @@
+package views
+
+templ Base() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>Remmi</title>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<meta name="robots" content="index, follow"/>
+			<meta name="revisit-after" content="7 days"/>
+			<meta name="language" content="English"/>
+			<link href="assets/css/output.css" rel="stylesheet"/>
+			<script src="assets/js/htmx.min.js"></script>
+		</head>
+		<div class="min-h-screen flex flex-col bg-base-300">
+			<nav class="navbar bg-base-100 justify-between">
+				<a href="/" class="btn btn-ghost text-2xl">Remmi <span>&#128000;</span></a>
+				<div class="flex flex-col sm:flex-row gap-4 px-2">
+					<a href="/recipe-generator" className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+						<span>Weekly Recipe Generator</span>
+					</a>
+					<a href="/recipe-book" className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+						<span>Recipe Book</span>
+					</a>
+					<a href="/pantry" className="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+						<span>Pantry</span>
+					</a>
+				</div>
+			</nav>
+			<main class="card p-6 flex-1 bg-base-100 m-6 flex flex-col">
+				{ children... }
+			</main>
+		</div>
+	</html>
+}

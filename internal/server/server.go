@@ -1,31 +1,35 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
+	"remmi-cookbook/internal/database"
+	"remmi-cookbook/internal/service"
 	"strconv"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
-
-	"remmi-cookbook/internal/database"
 )
 
 type Server struct {
-	port int
-
-	Db database.Service
+	port          int
+	recipeService service.RecipeService
 }
 
-func NewServer() (*http.Server, database.Service) {
+func NewServer() *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 
-	db := database.New()
+	ctx := context.Background()
+
+	dbInstance := database.New(ctx)
+
+	recipeService := service.NewRecipeService(*dbInstance)
 
 	NewServer := &Server{
-		port: port,
-		Db:   db,
+		port:          port,
+		recipeService: recipeService,
 	}
 
 	// Declare Server config
@@ -37,5 +41,5 @@ func NewServer() (*http.Server, database.Service) {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	return server, db
+	return server
 }

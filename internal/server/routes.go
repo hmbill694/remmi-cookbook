@@ -1,13 +1,11 @@
 package server
 
 import (
-	"net/http"
-
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
-	"remmi-cookbook/cmd/model"
 	"remmi-cookbook/cmd/web"
 
 	"github.com/coder/websocket"
@@ -33,26 +31,21 @@ func (s *Server) RegisterRoutes() http.Handler {
 	fileServer := http.FileServer(http.FS(web.Files))
 	e.GET("/assets/*", echo.WrapHandler(fileServer))
 
-	e.GET("/", HanlderFromTempl(web.HomePage(web.HomePageProps{
-		UserId:  "foo",
-		Recipes: []model.Recipe{},
-	})))
+	e.GET("/", s.HomeHandler)
 
-	// e.GET("/api/v1/recipes", s.getRecipesForUser)
+	e.GET("/api/recipe/search", s.HomeHandlerSearch)
 
-	e.GET("/health", s.healthHandler)
+	e.GET("/health/up", s.up)
 
 	e.GET("/websocket", s.websocketHandler)
 
 	return e
 }
 
-func (s *Server) getRecipesForUser(c echo.Context) error {
-	return c.JSON(http.StatusOK, s.Db.Health())
-}
-
-func (s *Server) healthHandler(c echo.Context) error {
-	return c.JSON(http.StatusOK, s.Db.Health())
+func (s *Server) up(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"status": "ok",
+	})
 }
 
 func (s *Server) websocketHandler(c echo.Context) error {

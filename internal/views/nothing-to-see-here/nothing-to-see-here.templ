@@ -1,0 +1,22 @@
+package nothingToSeeHere
+
+import "fmt"
+
+type NothingToSeeHereProps struct {
+	Message string
+}
+
+templ NothingToSeeHere(props NothingToSeeHereProps) {
+	<div class="flex flex-col items-center justify-center w-full h-full">
+		<!-- 3x3 grid of squares -->
+		<div class="grid grid-cols-3 gap-4 mb-6">
+			for i := range 9 {
+				<div class="w-16 h-16 bg-gray-300" id={ fmt.Sprintf("%d", i) }></div>
+			}
+		</div>
+		<!-- Dynamic subtitle -->
+		<h2 class="text-lg font-semibold text-gray-400">
+			{ props.Message }
+		</h2>
+	</div>
+}

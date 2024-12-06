@@ -1,0 +1,13 @@
+package errorDisplay
+
+type ErrorDisplayProps struct {
+	Err error
+}
+
+templ ErrorDisplay(props ErrorDisplayProps) {
+	if props.Err == nil {
+		{ children... }
+	} else {
+		<p>{ props.Err.Error() }</p>
+	}
+}

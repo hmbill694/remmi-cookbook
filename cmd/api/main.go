@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"log/slog"
 	"net/http"
 	"os/signal"
 	"syscall"
@@ -39,14 +38,8 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 
 func main() {
 
-	httpServer, dbService := server.NewServer()
+	httpServer := server.NewServer()
 
-	seedErr := dbService.SeedSql()
-
-	if seedErr != nil {
-		slog.Info(seedErr.Error())
-		panic("Failed to seed DB")
-	}
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)

@@ -1,10 +1,35 @@
 package service
 
 import (
-	"database/sql"
-	"remmi-cookbook/cmd/model"
+	"remmi-cookbook/internal/database"
+	"remmi-cookbook/internal/repository"
 )
 
-func getRecipesForUser(userId string, db *sql.DB) ([]model.Recipe, error) {
-	return make([]model.Recipe, 0), nil
+type RecipeService struct {
+	DbInstance database.DBInstance
 }
+
+func NewRecipeService(dbInstance database.DBInstance) RecipeService {
+	return RecipeService{
+		DbInstance: dbInstance,
+	}
+}
+
+func (rs RecipeService) GetRecipesForUser(search string) ([]repository.Recipe, error) {
+	repo := repository.New(rs.DbInstance.Db)
+
+	if search == "" {
+		return repo.GetAllRecipes(*rs.DbInstance.DbContext)
+	}
+
+	return repo.SearchForRecipes(*rs.DbInstance.DbContext, search)
+}
+
+// func (rs RecipeService) GetRecipesForUserHtml() (string, error) {
+// 	recipes, err := rs.GetRecipesForUser()
+
+// 	if err != nil {
+// 		return "", err
+// 	}
+
+// }
