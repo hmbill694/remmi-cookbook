@@ -6,5 +6,9 @@ import (
 )
 
 func HanlderFromTempl(comp templ.Component) echo.HandlerFunc {
- return echo.WrapHandler(templ.Handler(comp))
+	return echo.WrapHandler(templ.Handler(comp))
+}
+
+func TempleToEchoResponse(comp templ.Component, e echo.Context) error {
+	return comp.Render(e.Request().Context(), e.Response().Writer)
 }

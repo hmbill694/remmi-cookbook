@@ -18,7 +18,7 @@ func (s *Server) HomeHandler(e echo.Context) error {
 		Err:     err,
 	})
 
-	return home.Render(e.Request().Context(), e.Response().Writer)
+	return TempleToEchoResponse(home, e)
 }
 
 func (s *Server) HomeHandlerSearch(e echo.Context) error {
@@ -36,5 +36,5 @@ func (s *Server) HomeHandlerSearch(e echo.Context) error {
 		Err:     err,
 	})
 
-	return cards.Render(e.Request().Context(), e.Response().Writer)
+	return TempleToEchoResponse(cards, e)
 }
